@@ -8,7 +8,7 @@
 </head>
 
 <body>
-session 값 확인: <p th:text="${session.loginNickName}"></p>
+사용자 닉네임: <p th:text="${session.loginNickName}"></p>
 <div>
     <div class="container">
         <div class="col-6">
@@ -31,7 +31,7 @@ session 값 확인: <p th:text="${session.loginNickName}"></p>
 <script th:inline="javascript">
     $(document).ready(function(){
 
-        const username = /*[[${session.loginNickName}]]*/ 'defaultUser'; // 사용자 이름 주입 필요
+        const username = /*[[${session.loginNickName}]]*/ 'defaultUser';
 
         $("#disconn").on("click", (e) => {
             disconnect();
