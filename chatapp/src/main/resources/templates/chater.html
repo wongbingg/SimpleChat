@@ -50,58 +50,85 @@
         function send(){
 
             let msg = document.getElementById("msg");
+            let messageContent = msg.value;
+            let message = {
+                sender: username,
+                content: messageContent,
+                timestamp: new Date().toISOString()
+            };
 
-            console.log(username + ":" + msg.value);
-            websocket.send(username + ":" + msg.value);
+            console.log(message);
+            websocket.send(JSON.stringify(message));
             msg.value = '';
         }
 
         //채팅창에서 나갔을 때
         function onClose(evt) {
-            var str = username + ": 님이 방을 나가셨습니다.";
-            websocket.send(str);
+            let state = "방을 나갔습니다.";
+            let message = {
+                sender: username,
+                content: state,
+                timestamp: new Date().toISOString()
+            };
+            websocket.send(JSON.stringify(message));
         }
 
         //채팅창에 들어왔을 때
         function onOpen(evt) {
-            var str = username + ": 님이 입장하셨습니다.";
-            websocket.send(str);
+            let state = "방을 입장했습니다.";
+            let message = {
+                sender: username,
+                content: state,
+                timestamp: new Date().toISOString()
+            };
+            websocket.send(JSON.stringify(message));
+        }
+        function formatTimestamp(timestamp) {
+            var date = new Date(timestamp);
+            var year = date.getFullYear();
+            var month = (date.getMonth() + 1).toString().padStart(2, '0');
+            var day = date.getDate().toString().padStart(2, '0');
+            var hours = date.getHours().toString().padStart(2, '0');
+            var minutes = date.getMinutes().toString().padStart(2, '0');
+            var seconds = date.getSeconds().toString().padStart(2, '0');
+
+            return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
         }
 
         function onMessage(msg) {
-            var data = msg.data;
-            var sessionId = null;
-            //데이터를 보낸 사람
-            var message = null;
-            var arr = data.split(":");
-
-            for(var i=0; i<arr.length; i++){
-                console.log('arr[' + i + ']: ' + arr[i]);
-            }
-
+            var data = JSON.parse(msg.data);
+            var sessionId = data.sender;
+            var message = data.content;
+            var timestamp = data.timestamp;
             var cur_session = username;
 
-            //현재 세션에 로그인 한 사람
             console.log("cur_session : " + cur_session);
-            sessionId = arr[0];
-            message = arr[1];
-
             console.log("sessionID : " + sessionId);
-            console.log("cur_session : " + cur_session);
+            console.log("message : " + message);
+
+            var formattedTime = formatTimestamp(timestamp);
 
             //로그인 한 클라이언트와 타 클라이언트를 분류하기 위함
             if(sessionId == cur_session){
                 var str = "<div class='col-6'>";
                 str += "<div class='alert alert-secondary'>";
                 str += "<b>" + sessionId + " : " + message + "</b>";
-                str += "</div></div>";
+                str += "</div>";
+                str += "<div class='text-right'>";
+                str += "<p class='text-muted'><small>" + formattedTime + "</small></p>";
+                str += "</div>";
+                str += "</div>";
                 $("#msgArea").append(str);
             }
             else{
                 var str = "<div class='col-6'>";
                 str += "<div class='alert alert-warning'>";
                 str += "<b>" + sessionId + " : " + message + "</b>";
-                str += "</div></div>";
+                str += "</div>";
+                str += "<div class='text-right'>";
+                str += "<p class='text-muted'><small>" + formattedTime + "</small></p>";
+                str += "</div>";
+                str += "</div>";
                 $("#msgArea").append(str);
             }
         }
