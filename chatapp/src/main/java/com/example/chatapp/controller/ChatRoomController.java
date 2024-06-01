@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import lombok.Builder;
+
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -25,7 +27,7 @@ public class ChatRoomController {
 
     @PostMapping("/chatroom")
     public String login(@ModelAttribute MemberDTO memberDTO, HttpSession session, Model model){
-        log.info("@ChatController, chat GET()");
+        log.info("@ChatRoomController, GET()");
         String memberNickName = memberDTO.getNickName();
         session.setAttribute("loginNickName", memberNickName);
         log.info("입력된 닉네임: " + memberNickName);
@@ -36,20 +38,21 @@ public class ChatRoomController {
 //        return "chater";
     }
 
-//    @GetMapping("/chatroom")
-//    public String findAll(Model model) {
-//        // DB에서 전체 게시글 데이터를 가져와서 list.html 에 보여준다.
-//        List<ChatRoomResponseDTO> chatRoomDTOList = chatRoomService.findAllAsc();
-//        model.addAttribute("chatRoomList", chatRoomDTOList);
-//        return "list";
-//    }
+    @GetMapping("/chatroom")
+    public String findAll(Model model) {
+        // DB에서 전체 게시글 데이터를 가져와서 list.html 에 보여준다.
+        List<ChatRoomResponseDTO> chatRoomDTOList = chatRoomService.findAllAsc();
+        model.addAttribute("chatRoomList", chatRoomDTOList);
+        return "list";
+    }
 
     @PostMapping("/chatroom/create")
-    public String create(@ModelAttribute ChatRoomRequestDTO requestDTO) {
+    public String create(@ModelAttribute ChatRoomRequestDTO requestDTO) throws IOException {
+        System.out.println("roomName = " + requestDTO.getRoomName());
         ChatRoomRequestDTO chatRoomRequestDTO = ChatRoomRequestDTO.builder()
                 .roomName(requestDTO.getRoomName())
                 .build();
         chatRoomService.save(chatRoomRequestDTO);
-        return "list";
+        return "redirect:/chatroom"; // getMapping으로 가겠지?
     }
 }
