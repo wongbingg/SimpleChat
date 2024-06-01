@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>list</title>
+</head>
+<body>
+<!--<button formaction="/chatroom/create" formmethod="post">채팅방 만들기</button>-->
+<form action="/chatroom/create" method="post">
+    방이름: <input type="text" name="roomName">
+    <input type="submit" value="채팅방 만들기">
+</form>
+<table>
+    <tr>
+        <th>id</th>
+        <th>title</th>
+    </tr>
+    <tr th:each="chatRoom: ${chatRoomList}"> <!--For 문과 같은 역할-->
+        <td th:text="${chatRoom.id}"></td>
+        <td><a th:href="@{|/chatRoom/${chatRoom.id}|}" th:text="${chatRoom.roomName}"></a></td>
+    </tr>
+</table>
+</body>
+</html>
