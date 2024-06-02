@@ -17,7 +17,7 @@
     </tr>
     <tr th:each="chatRoom: ${chatRoomList}"> <!--For 문과 같은 역할-->
         <td th:text="${chatRoom.id}"></td>
-        <td><a th:href="@{|/chatRoom/${chatRoom.id}|}" th:text="${chatRoom.roomName}"></a></td>
+        <td><a th:href="@{|/chatroom/${chatRoom.id}|}" th:text="${chatRoom.roomName}"></a></td>
     </tr>
 </table>
 </body>

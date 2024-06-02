@@ -44,25 +44,23 @@ public class ChatMessageService {
         this.chatMessageRepository.delete(chatMessageEntity);
     }
 
-
-
 //    /** 특정 채팅방 ChatMessage 목록조회 - 작성순, List, ChatRoomId 검색 */
-//    @Transactional
-//    public List<ChatMessageResponseDTO> findAllByChatRoomIdAsc(final Long chatRoomId) {
-//        ChatRoom chatRoomEntity = this.chatRoomRepository.findById(chatRoomId).orElseThrow(
-//                () -> new IllegalArgumentException("해당 ChatRoom이 존재하지 않습니다. chatRoomId = " + chatRoomId));
-//        Sort sort = Sort.by(Sort.Direction.ASC, "id");
-//        List<ChatMessage> chatMessageList = this.chatMessageRepository.findAllByChatRoom(chatRoomEntity, sort);
-//        return chatMessageList.stream().map(ChatMessageResponseDTO::new).collect(Collectors.toList());
-//    }
+    @Transactional
+    public List<ChatMessageResponseDTO> findAllByChatRoomIdAsc(final Long chatRoomId) {
+        ChatRoom chatRoomEntity = this.chatRoomRepository.findById(chatRoomId).orElseThrow(
+                () -> new IllegalArgumentException("해당 ChatRoom이 존재하지 않습니다. chatRoomId = " + chatRoomId));
+        Sort sort = Sort.by(Sort.Direction.ASC, "id");
+        List<ChatMessage> chatMessageList = this.chatMessageRepository.findAllByChatRoom(chatRoomEntity, sort);
+        return chatMessageList.stream().map(ChatMessageResponseDTO::new).collect(Collectors.toList());
+    }
 //
 //    /** 특정 채팅방 ChatMessage 목록조회 - 최신순, List, ChatRoomId 검색 */
-//    @Transactional
-//    public List<ChatMessageResponseDTO> findAllByChatRoomIdDesc(final Long chatRoomId) {
-//        ChatRoom chatRoomEntity = this.chatRoomRepository.findById(chatRoomId).orElseThrow(
-//                () -> new IllegalArgumentException("해당 ChatRoom이 존재하지 않습니다. chatRoomId = " + chatRoomId));
-//        Sort sort = Sort.by(Sort.Direction.DESC, "id");
-//        List<ChatMessage> chatMessageList = this.chatMessageRepository.findAllByChatRoom(chatRoomEntity, sort);
-//        return chatMessageList.stream().map(ChatMessageResponseDTO::new).collect(Collectors.toList());
-//    }
+    @Transactional
+    public List<ChatMessageResponseDTO> findAllByChatRoomIdDesc(final Long chatRoomId) {
+        ChatRoom chatRoomEntity = this.chatRoomRepository.findById(chatRoomId).orElseThrow(
+                () -> new IllegalArgumentException("해당 ChatRoom이 존재하지 않습니다. chatRoomId = " + chatRoomId));
+        Sort sort = Sort.by(Sort.Direction.DESC, "id");
+        List<ChatMessage> chatMessageList = this.chatMessageRepository.findAllByChatRoom(chatRoomEntity, sort);
+        return chatMessageList.stream().map(ChatMessageResponseDTO::new).collect(Collectors.toList());
+    }
 }

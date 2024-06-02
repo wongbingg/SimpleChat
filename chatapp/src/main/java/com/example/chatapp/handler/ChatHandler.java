@@ -1,6 +1,11 @@
 package com.example.chatapp.handler;
 
+import com.example.chatapp.dto.ChatMessageRequestDTO;
+import com.example.chatapp.entity.ChatMessage;
+import com.example.chatapp.service.ChatMessageService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -14,11 +19,23 @@ import java.util.List;
 @Log4j2
 public class ChatHandler extends TextWebSocketHandler {
     private static List<WebSocketSession> list = new ArrayList<>();
+    private final ChatMessageService chatMessageService;
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Autowired
+    public ChatHandler(ChatMessageService chatMessageService) {
+        this.chatMessageService = chatMessageService;
+    }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
         log.info("payload : " + payload);
+
+        ChatMessageRequestDTO requestDTO = objectMapper.readValue(payload, ChatMessageRequestDTO.class);
+
+        chatMessageService.save(requestDTO.getChatRoom().getId(), requestDTO);
+
         //페이로드란 전송되는 데이터를 의미한다.
         for(WebSocketSession sess: list) {
             sess.sendMessage(message);

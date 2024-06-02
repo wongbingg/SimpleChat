@@ -15,7 +15,15 @@
             <label><b>채팅방</b></label>
         </div>
         <div>
-            <div id="msgArea" class="col"></div>
+            <!-- 메시지 출력 -->
+            <div id="msgArea" class="col">
+                <div th:each="message: ${messageList}">
+                    <p>
+                        <b th:text="${message.sender}"></b>: <span th:text="${message.message}"></span>
+                    </p>
+                </div>
+            </div>
+            <!-- 메세지 입력 및 전송 -->
             <div class="col-6">
                 <div class="input-group mb-3">
                     <input type="text" id="msg" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2">
@@ -32,6 +40,8 @@
     $(document).ready(function(){
 
         const username = /*[[${session.loginNickName}]]*/ 'defaultUser';
+        const roomName = /*[[${chatRoom.roomName}]]*/ 'defaultRoom';
+        const roomId = /*[[${chatRoom.id}]]*/ 'defaultRoomId';
 
         $("#disconn").on("click", (e) => {
             disconnect();
@@ -53,8 +63,11 @@
             let messageContent = msg.value;
             let message = {
                 sender: username,
-                content: messageContent,
-                timestamp: new Date().toISOString()
+                message: messageContent,
+                chatRoom: {
+                    id: roomId,
+                    roomName: roomName
+                }
             };
 
             console.log(message);
@@ -67,8 +80,11 @@
             let state = "방을 나갔습니다.";
             let message = {
                 sender: username,
-                content: state,
-                timestamp: new Date().toISOString()
+                message: state,
+                chatRoom: {
+                    id: roomId,
+                    roomName: roomName
+                }
             };
             websocket.send(JSON.stringify(message));
         }
@@ -78,11 +94,15 @@
             let state = "방을 입장했습니다.";
             let message = {
                 sender: username,
-                content: state,
-                timestamp: new Date().toISOString()
+                message: state,
+                chatRoom: {
+                    id: roomId,
+                    roomName: roomName
+                }
             };
             websocket.send(JSON.stringify(message));
         }
+
         function formatTimestamp(timestamp) {
             var date = new Date(timestamp);
             var year = date.getFullYear();
@@ -98,43 +118,26 @@
         function onMessage(msg) {
             var data = JSON.parse(msg.data);
             var sessionId = data.sender;
-            var message = data.content;
-            var timestamp = data.timestamp;
+            var message = data.message;
             var cur_session = username;
 
             console.log("cur_session : " + cur_session);
             console.log("sessionID : " + sessionId);
             console.log("message : " + message);
-
-            var formattedTime = formatTimestamp(timestamp);
+            let messageArea = document.getElementById("msgArea");
+            let p = document.createElement("p");
+            p.innerHTML = "<b>" + sessionId + "</b>: " + message;
+            messageArea.appendChild(p);
 
             //로그인 한 클라이언트와 타 클라이언트를 분류하기 위함
             if(sessionId == cur_session){
-                var str = "<div class='col-6'>";
-                str += "<div class='alert alert-secondary'>";
-                str += "<b>" + sessionId + " : " + message + "</b>";
-                str += "</div>";
-                str += "<div class='text-right'>";
-                str += "<p class='text-muted'><small>" + formattedTime + "</small></p>";
-                str += "</div>";
-                str += "</div>";
-                $("#msgArea").append(str);
+                console.log("내가 보낸 메세지");
             }
             else{
-                var str = "<div class='col-6'>";
-                str += "<div class='alert alert-warning'>";
-                str += "<b>" + sessionId + " : " + message + "</b>";
-                str += "</div>";
-                str += "<div class='text-right'>";
-                str += "<p class='text-muted'><small>" + formattedTime + "</small></p>";
-                str += "</div>";
-                str += "</div>";
-                $("#msgArea").append(str);
+                console.log("다른사람이 보낸 메세지");
             }
         }
     })
 </script>
-
 </body>
-
 </html>
